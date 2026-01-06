@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.example.model.Student;
 
 @Repository
-public class StudentDAOImpl implements com.example.DAO.StudentDAO {
+public class StudentDAOImpl implements com.example.dao.StudentDAO {
 
 	@Autowired
 	JdbcTemplate template;

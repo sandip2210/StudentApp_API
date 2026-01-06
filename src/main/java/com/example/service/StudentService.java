@@ -1,12 +1,15 @@
-package com.example.dao;
+package com.example.service;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.model.Student;
 
-public interface StudentDAO {
-	
-	List<Student> findByRoll(long roll);
+@Service
+public interface StudentService {
+
+List<Student> findByRoll(long roll);
 	
 	int save(Student s);
 	
@@ -15,7 +18,4 @@ public interface StudentDAO {
 	int delete(long roll);
 	
 	List<Student> findAll();
-	
-
-
 }

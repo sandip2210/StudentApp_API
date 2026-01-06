@@ -3,9 +3,6 @@ package com.example.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.DAO.StudentDAO;
 import com.example.model.Student;
+import com.example.service.StudentService;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -31,7 +26,7 @@ import com.example.model.Student;
 public class StudentController {
 
 	@Autowired
-	StudentDAO studentDAO;
+	StudentService studentService;
 
 	@Autowired
 	JdbcTemplate template;
@@ -46,10 +41,10 @@ public class StudentController {
 
 	@GetMapping("/getStudent")
 	public ResponseEntity<?> getAllStudents() {
-	    System.out.println("call getStudent");
+	    System.out.println("*********call getStudent**********");
 	    
 	    try {
-	        List<Student> students = studentDAO.findAll();
+	        List<Student> students = studentService.findAll();
 	        
 	        if (students == null || students.isEmpty()) {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -72,7 +67,7 @@ public class StudentController {
 
 		try {
 			// Check if a student already exists with the same roll
-			List<Student> existingStudents = studentDAO.findByRoll(s.getRoll());
+			List<Student> existingStudents = studentService.findByRoll(s.getRoll());
 
 			if (existingStudents != null && !existingStudents.isEmpty()) {
 				System.out.println("Student with roll " + s.getRoll() + " already exists");
@@ -81,7 +76,7 @@ public class StudentController {
 			}
 
 			// Save the new student
-			studentDAO.save(s);
+			studentService.save(s);
 			System.out.println("Student saved successfully: " + s.getRoll());
 			return ResponseEntity.ok(s);
 
@@ -94,13 +89,13 @@ public class StudentController {
 	/*
 	 * @PutMapping("/student/{id}") public ResponseEntity<String>
 	 * updateStudent(@PathVariable("id") long id,@RequestBody Student s) { int
-	 * result =studentDAO.update(s); return new
+	 * result =studentService.update(s); return new
 	 * ResponseEntity<>("Data updated Successfully",HttpStatus.OK); }
 	 */
 	@PutMapping("/updateStudent/{roll}")
 	public ResponseEntity<String> updateStudent(@PathVariable("roll") long roll, @RequestBody Student updatedStudent) {
 		System.out.println("First Roll is ==" + roll);
-		List<Student> existingStudents = studentDAO.findByRoll(roll);
+		List<Student> existingStudents = studentService.findByRoll(roll);
 		System.out.println("Roll is==" + roll);
 		if (existingStudents != null && !existingStudents.isEmpty()) {
 			Student existingStudent = existingStudents.get(0);
@@ -108,7 +103,7 @@ public class StudentController {
 			existingStudent.setCity(updatedStudent.getCity());
 			existingStudent.setRoll(updatedStudent.getRoll());
 			System.out.println("existingStudent == " + existingStudent.getRoll() + " " + existingStudent.getName());
-			studentDAO.update(existingStudent);
+			studentService.update(existingStudent);
 			return ResponseEntity.ok("Student updated successfully.");
 		} else {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found with roll: " + roll);
@@ -118,7 +113,7 @@ public class StudentController {
 	@DeleteMapping("/deleteStudent/{roll}")
 	public ResponseEntity<Map<String, String>> deleteStudent(@PathVariable("roll") long roll) {
 		System.out.println("Delete call 2221");
-		int result = studentDAO.delete(roll);
+		int result = studentService.delete(roll);
 
 		Map<String, String> response = new HashMap();
 		if (result > 0) {
